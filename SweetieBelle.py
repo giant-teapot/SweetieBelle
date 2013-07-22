@@ -1,7 +1,9 @@
+#-*- conding: utf-8 -*-
 #!/usr/bin/env python
 
-import sys
+import sys, re
 import ConfigParser
+import Commands
 
 from twisted.words.protocols import irc
 from twisted.internet import reactor, protocol
@@ -11,15 +13,6 @@ from twisted.python import log
 ''' Our friendly bot main class '''
 class SweetieBelle(irc.IRCClient):
 
-	nickname = "SweetieBelle"
-	realname = "Sweetie Belle"
-
-	# TODO : authentification
-	# username = ""
-	# password = ""
-
-	log_file = "sweetie_log"
-
 	''' Called after sucessfully signing on to the server '''
 	def signedOn(self):
 		self.join(self.factory.channels)
@@ -27,11 +20,22 @@ class SweetieBelle(irc.IRCClient):
 
 	''' Callback triggered each time a mesage is recieved '''
 	def privmsg(self, user, channel, message):
-		if channel in self.channels and self.nickname in message:
-			self.say(channel, "On me parle ?")
+		author, _, host = user.partition('!')
+
+		if message.startswith(self.nickname) or channel==self.nickname:
+			# Stripping the message of the bot nickname
+			message = re.sub(r'^%s[.,>:;!?]*\s*' % re.escape(self.nickname), '',
+				message)
+			command, _, params = message.partition(" ")
+			
+			if command in SweetieBelle.commands:
+				SweetieBelle.commands[command](self, params)
+			else:
+				self.say(channel,
+					"I'm sorry "+author+" but I don't understand your request.")
 
 
-''' Connexion factory, handles default channels '''
+''' Connection factory, handles default channels '''
 class IRCFactory(protocol.ReconnectingClientFactory):
 
 	protocol = SweetieBelle
@@ -39,24 +43,40 @@ class IRCFactory(protocol.ReconnectingClientFactory):
 	def __init__(self, channels):
 		self.channels = channels 
 
+'''Loads config from a file using ConfigParser ''' 
+def load_config(filename):
+	config = ConfigParser.RawConfigParser()
+	config.read(filename)
+	SweetieBelle.server_host = config.get("connection", "server")
+	SweetieBelle.server_port = config.getint("connection", "port")
+	SweetieBelle.channels = config.get("connection", "channels")
+	SweetieBelle.nickname = config.get("identity", "nickname")
+	SweetieBelle.realname = config.get("identity", "realname")
+	# TODO : authentification
+	SweetieBelle.logfile = config.get("local", "logfile")
+
 
 ''' Creates a new bot instance that connects to the server '''
 def startSweetie():
 
-	config = ConfigParser.RawConfigParser()
-	config.read('bot.cfg')
-	SweetieBelle.server_host = config.get("connection", "server")
-	SweetieBelle.server_port = config.getint("connection", "port")
-	SweetieBelle.channels = config.get("connection", "channels")
+	log.startLogging(sys.stdout)
+
+	print "Loading configuration file"
+	load_config('bot.cfg')
 
 	print "Connecting to " + SweetieBelle.server_host + ":" + str(SweetieBelle.server_port) 
+	print "Joining channels " + SweetieBelle.channels
 	reactor.connectTCP(
 		SweetieBelle.server_host,
 		SweetieBelle.server_port,
 		IRCFactory(SweetieBelle.channels)
 		)
-	log.startLogging(sys.stdout)
 	print "Connexion established!"
+
+	SweetieBelle.commands = {
+		'kick': Commands.kick,
+		'moo': Commands.say_moo,
+	}
 	reactor.run()
 
 if __name__ == '__main__':
