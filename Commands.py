@@ -16,6 +16,7 @@ def kick(bot, params):
 def suicide(bot, params):
 	bot.say(bot.channels, "Sure. You'll never see me again...")
 	bot.leave(bot.channels)
+        bot.quit()
 
 ''' Hum... Clops at somthing '''
 def clop(bot, params):
@@ -34,3 +35,9 @@ def say_moo(bot, params):
 def karmic_change(bot, params):
         victim, change = params.split()
         bot.say(bot.channels, victim + " karma has been changed " + change)
+
+def change_voice(bot, params, change):
+        victim = params
+        bot.mode(bot.channels,change,"v",user=victim)
+
+        

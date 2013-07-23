@@ -30,15 +30,17 @@ class SweetieBelle(irc.IRCClient):
                                          message
                         )
 			command, _, params = message.partition(" ")
-			
-			if command in SweetieBelle.commands:
-				SweetieBelle.commands[command](self, params)
+
+                        if command in SweetieBelle.commands:
+                                kwargs = SweetieBelle.kwargs.get(command,{})
+				SweetieBelle.commands[command](self,params,
+                                                               **kwargs
+                                )
 			else:
 				self.say(channel,
 					"I'm sorry " + author +
                                          " but I don't understand your request."
                                 )
-
 
 ''' Connection factory, handles default channels '''
 class IRCFactory(protocol.ReconnectingClientFactory):
@@ -80,13 +82,20 @@ def startSweetie():
 	print "Connexion established!"
 
 	SweetieBelle.commands = {
-		'kick': Commands.kick,
-		'kill': Commands.kick,
+#		'kick': Commands.kick,
+#		'kill': Commands.kick,
 		'moo': Commands.say_moo,
                 'karma': Commands.karmic_change,
 		'clop': Commands.clop,
-		'suicide': Commands.suicide
+#		'suicide': Commands.suicide,
+                'unvoice': Commands.change_voice,
+                'voice': Commands.change_voice,
 	}
+
+        SweetieBelle.kwargs = {
+                'unvoice': {"change":False},
+                'voice': {"change":True}
+        }
 
 	reactor.run()
 
