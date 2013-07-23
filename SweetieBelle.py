@@ -1,4 +1,4 @@
-#-*- conding: utf-8 -*-
+#-*- coding: utf-8 -*-
 #!/usr/bin/env python
 
 import sys, re
@@ -24,15 +24,20 @@ class SweetieBelle(irc.IRCClient):
 
 		if message.startswith(self.nickname) or channel==self.nickname:
 			# Stripping the message of the bot nickname
-			message = re.sub(r'^%s[.,>:;!?]*\s*' % re.escape(self.nickname), '',
-				message)
+			message = re.sub(r'^%s[.,>:;!?]*\s*' % 
+                                         re.escape(self.nickname),
+                                         '',
+                                         message
+                        )
 			command, _, params = message.partition(" ")
 			
 			if command in SweetieBelle.commands:
 				SweetieBelle.commands[command](self, params)
 			else:
 				self.say(channel,
-					"I'm sorry "+author+" but I don't understand your request.")
+					"I'm sorry " + author +
+                                         " but I don't understand your request."
+                                )
 
 
 ''' Connection factory, handles default channels '''
@@ -64,7 +69,8 @@ def startSweetie():
 	print "Loading configuration file"
 	load_config('bot.cfg')
 
-	print "Connecting to " + SweetieBelle.server_host + ":" + str(SweetieBelle.server_port) 
+	print "Connecting to " + SweetieBelle.server_host + ":\
+        " + str(SweetieBelle.server_port) 
 	print "Joining channels " + SweetieBelle.channels
 	reactor.connectTCP(
 		SweetieBelle.server_host,

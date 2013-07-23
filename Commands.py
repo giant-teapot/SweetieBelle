@@ -1,4 +1,4 @@
-#-*- conding: utf-8 -*-
+#-*- coding: utf-8 -*-
 #!/usr/bin/env python
 
 ''' Kicks a list of users '''
@@ -8,8 +8,9 @@ def kick(bot, params):
 	print bot.channels
 
 	for victim in victims:
-		bot.kick(bot.channels, victim, "This conversation can serve no purpose anymore.")
-
+		bot.kick(bot.channels, victim,
+                         "This conversation can serve no purpose anymore."
+                )
 
 def say_moo(bot, params):
 	bot.say(bot.channels, "Moooooo!")
