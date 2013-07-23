@@ -14,3 +14,7 @@ def kick(bot, params):
 
 def say_moo(bot, params):
 	bot.say(bot.channels, "Moooooo!")
+
+def karmic_change(bot, params):
+        victim, change = params.split()
+        bot.say(bot.channels, victim + " karma has been changed " + change)
