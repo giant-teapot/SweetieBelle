@@ -75,7 +75,10 @@ def startSweetie():
 
 	SweetieBelle.commands = {
 		'kick': Commands.kick,
+		'kill': Commands.kick,
 		'moo': Commands.say_moo,
+		'clop': Commands.clop,
+		'suicide': Commands.suicide
 	}
 	reactor.run()
 

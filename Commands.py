@@ -10,6 +10,20 @@ def kick(bot, params):
 	for victim in victims:
 		bot.kick(bot.channels, victim, "This conversation can serve no purpose anymore.")
 
+''' Leaves the channel '''
+def suicide(bot, params):
+	bot.say(bot.channels, "Sure. You'll never see me again...")
+	bot.leave(bot.channels)
 
+''' Hum... Clops at somthing '''
+def clop(bot, params):
+	names = params.split()
+	if len(names)>0:
+		bot.describe(bot.channels, "clops thinking about "
+			+" and ".join(n for n in names)+".")
+	else:
+		bot.describe(bot.channels, "clops very hard. CLOP CLOP CLOP CLOP!")
+
+''' Says moo '''
 def say_moo(bot, params):
 	bot.say(bot.channels, "Moooooo!")
