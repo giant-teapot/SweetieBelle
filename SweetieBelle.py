@@ -82,7 +82,9 @@ def startSweetie():
 	SweetieBelle.commands = {
 		'kick': Commands.kick,
 		'moo': Commands.say_moo,
+                'karma': Commands.karmic_change,
 	}
+
 	reactor.run()
 
 if __name__ == '__main__':
